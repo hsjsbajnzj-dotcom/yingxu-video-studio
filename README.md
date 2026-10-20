@@ -1,10 +1,52 @@
 # 映序 · 本地视频工作室
 
+**把复杂的本地 AI 视频操作，整理成中文生成界面和分镜工作流。**
+
+[下载源码预览](https://github.com/hsjsbajnzj-dotcom/yingxu-video-studio/releases) · [快速上手](docs/QUICKSTART.md) · [首批试用](docs/TRY_IT.md) · [反馈问题](https://github.com/hsjsbajnzj-dotcom/yingxu-video-studio/issues/new/choose)
+
+[先看40秒界面导览](https://github.com/hsjsbajnzj-dotcom/yingxu-video-studio/releases/tag/v0.1.0-rc.1)：预发布附件中的1920×1080静音截图剪辑，非连续录屏，未运行模型或生成成片。
+
+![Windows 与 Ubuntu 基础检查](https://github.com/hsjsbajnzj-dotcom/yingxu-video-studio/actions/workflows/source-check.yml/badge.svg)
+
 > 0.1.0-rc.1 实验性源码预览。不是稳定版，也不是附带模型的一键安装包。
 > 自有代码选择 GPL-3.0-only，署名“映序”；代码来源与第三方条款仍待最终核查。本目录没有附带视频引擎、模型、私有素材或个人配置。
 
 映序为本地视频生成提供中文快速表单、分镜项目、素材查看与部分后处理适配。
 它不是自研视频模型，也不保证达到商业云端模型的质量。
+
+Yingxu is an experimental Chinese-language interface and shot workflow for independently installed local video engines. Models and engines are not included.
+
+![映序中文快速生成真实界面](docs/media/01-quick-create.jpg)
+
+*来自公开版本的真实界面，使用隔离空白环境拍摄。示例提示词已输入，任务尚未提交；不是生成效果或速度证明。*
+
+## 谁适合先试
+
+- 已安装本地视频引擎，希望把日常中文输入、参考素材和分镜管理放在一起的创作者。
+- 想参与测试安装与使用体验、愿意反馈问题的 ComfyUI / WanGP 用户。
+- 暂未装模型也能查看界面和整理分镜，但不能因此生成视频。新手建议先读[快速上手](docs/QUICKSTART.md)。
+
+## 看得到的操作，不夸大成片能力
+
+| 页面 | 在这里做什么 | 需要另外准备什么 |
+| --- | --- | --- |
+| 快速生成 | 输入中文，选择模式、时长、比例和质量预设 | 生成前配置对应引擎、节点和权重 |
+| 图片＋文字 | 首帧、尾帧、多图或预演参考请求管理 | 模型和节点支持；运动参考为实验性 |
+| 分镜工作流 | 镜头卡片、项目保存与导入导出、顺序提交 | 实际生成仍取决于引擎；不是剪辑时间线 |
+| 模型与工具 | 检查配置，识别缺失依赖与不可用入口 | FFmpeg及外部引擎自行安装 |
+
+<details>
+<summary>展开：参考素材、分镜和首次检查截图</summary>
+
+![首尾帧与参考素材入口](docs/media/02-reference-inputs.jpg)
+
+![两个镜头的项目管理示例](docs/media/03-shot-workflow.jpg)
+
+![未配置引擎时的真实诊断界面](docs/media/04-first-run-check.jpg)
+
+这些截图没有使用私人素材，没有启动模型，也没有生成成片。拍摄所用本机媒体工具已安装，不代表下载本项目会附带这些工具。截图来源与版本见[素材记录](docs/MEDIA_PROVENANCE.md)。
+
+</details>
 
 仅在同一台Windows电脑的隔离环境验证，最新54项本地自动测试通过；不是新电脑或GPU画质验收。H3/WanGP等集成的具体发布义务及逐文件来源审查尚未完成，不能据此宣称全球无限制商用。维护者选择先公开源码供审查，不代表待核查项已经关闭。
 
@@ -32,6 +74,10 @@
 - [许可证](LICENSE)、[版权范围](COPYRIGHT.md)与[许可决定](LICENSE-DECISION.md)
 
 只应在回环地址进行本地试验。此候选不提供公网、多用户或付费服务部署能力。
+
+## 一起改进
+
+首轮希望找到 **5 位真实试用者**，优先验证安装、中文表单和分镜保存。遇到问题请用[试用清单](docs/TRY_IT.md)反馈，勿上传密钥、私人素材和完整日志。愿意改代码请先看[贡献指南](CONTRIBUTING.md)；质量对比请说明引擎、模型、参数、耗时和后处理，不用启动成功代替画质验收。
 
 ## 面向开发者的检查
 

@@ -44,6 +44,8 @@ secrets*
 *.jpeg
 *.webp
 *.ico
+!docs/media/*.png
+!docs/media/*.jpg
 *.exe
 *.dll
 *.whl
