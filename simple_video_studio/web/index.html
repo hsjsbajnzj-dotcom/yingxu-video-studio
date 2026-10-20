@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>映序 · 视频工作室</title>
+  <link rel="stylesheet" href="/styles.css?v=20261016.3">
+  <link rel="stylesheet" href="/hub.css?v=20261018.1">
+</head>
+<body>
+  <div class="ambient ambient-a"></div>
+  <div class="ambient ambient-b"></div>
+  <header class="topbar">
+    <div>
+      <div class="eyebrow">YINGXU · YOUR LOCAL FILM STUDIO</div>
+      <h1>映序 <span>视频工作室</span></h1>
+      <p>从一句想法，到一组镜头。</p>
+    </div>
+    <div class="status-cluster">
+      <span id="studioStatus" class="status-dot good">网页已启动</span>
+      <button id="engineStatus" class="status-dot muted" type="button">检测本地引擎</button>
+    </div>
+  </header>
+
+  <nav class="tabs" aria-label="工作室页面">
+    <button class="tab active" data-tab="create">✦ 快速生成</button>
+    <button class="tab" data-tab="workflow">▦ 分镜工作流</button>
+    <button class="tab" data-tab="library">▧ 素材与成片</button>
+    <button class="tab" data-tab="enhance">◈ 画质增强</button>
+    <button class="tab" data-tab="tasks">◷ 生成任务 <span id="taskBadge" class="badge">0</span></button>
+    <button class="tab" data-tab="engines">⚙ 模型与工具</button>
+    <button class="tab" data-tab="learn">? 使用指南</button>
+  </nav>
+
+  <main>
+    <section id="tab-create" class="tab-page active">
+      <div class="workspace-grid">
+        <form id="createForm" class="panel form-panel">
+          <div class="step-head">
+            <span class="step-number">01</span>
+            <div>
+              <h2>选择怎么拍</h2>
+              <p>中文描述即可。本地模型使用电脑算力；云端模型需单独配置 API。</p>
+            </div>
+          </div>
+
+          <label class="field-label" for="provider">生成引擎</label>
+          <select id="provider" name="provider"></select>
+          <div id="providerNote" class="help-box"></div>
+          <div id="engineProfileWrap">
+            <label class="field-label" for="engineProfile">本地引擎版本</label>
+            <select id="engineProfile"><option value="comfy_stable">稳定版 · 日常使用</option><option value="comfy_latest">新版 0.42.1 · 对照测试</option></select>
+          </div>
+
+          <div class="segmented" role="group" aria-label="创作方式">
+            <button class="segment active" type="button" data-mode="text">
+              <span>文生视频</span><small>只输入中文描述</small>
+            </button>
+            <button class="segment" type="button" data-mode="image">
+              <span>图片＋文字</span><small>首帧 / 尾帧 / 多图参考</small>
+            </button>
+          </div>
+          <input id="mode" name="mode" type="hidden" value="text">
+
+          <div id="uploadBlock" class="upload-block hidden">
+            <input id="imageInput" type="file" accept="image/png,image/jpeg,image/webp,image/bmp" hidden>
+            <button id="uploadButton" class="upload-drop" type="button">
+              <span class="upload-icon">＋</span>
+              <strong>选择首帧图片</strong>
+              <small>PNG / JPG / WEBP，最大 20MB</small>
+            </button>
+            <div id="imagePreviewWrap" class="image-preview hidden">
+              <img id="imagePreview" alt="首帧预览">
+              <div>
+                <strong id="imageName"></strong>
+                <button id="removeImage" class="text-button" type="button">移除图片</button>
+              </div>
+            </div>
+            <div id="extraImageAssets"></div>
+          </div>
+
+          <div class="step-head compact">
+            <span class="step-number">02</span>
+            <div>
+              <h2>用中文告诉它发生什么</h2>
+              <p>像给演员和摄影师说戏，不用写节点参数。</p>
+            </div>
+          </div>
+
+          <label class="field-label" for="prompt">画面、动作、镜头和情绪</label>
+          <textarea id="prompt" name="prompt" rows="7" maxlength="3000" placeholder="例如：夜晚的老旧饭厅里，父亲突然拍桌子，水杯里的水被震出涟漪。他压着怒气盯住女儿，用中文吼道：“我们不吃不喝攒钱是为了谁？”母亲坐在旁边沉默地夹菜，墙上的全家福仍然清晰可见。镜头从完整餐桌缓慢向前压近，压迫感逐渐增强。"></textarea>
+          <div class="prompt-tools">
+            <span id="promptCount">0 / 3000</span>
+            <button id="examplePrompt" type="button" class="text-button">填入示例</button>
+          </div>
+
+          <div class="two-cols">
+            <div>
+              <label class="field-label" for="duration">视频长度：<strong id="durationValue">5 秒</strong></label>
+              <input id="duration" type="range" min="1" max="15" step="1" value="5">
+              <div class="utility-row"><button type="button" class="text-button" data-duration="5">常用 5 秒</button><button type="button" class="text-button" data-duration="10">常用 10 秒</button></div>
+              <div id="durationHint" class="field-hint">5–15 秒处在 H3 的主要训练范围内。</div>
+            </div>
+            <div>
+              <label class="field-label" for="aspect">画面比例</label>
+              <select id="aspect">
+                <option value="16:9">横屏 16:9</option>
+                <option value="9:16">竖屏 9:16</option>
+                <option value="1:1">方形 1:1</option>
+                <option value="4:3">横屏 4:3</option>
+                <option value="3:4">竖屏 3:4</option>
+                <option value="21:9">电影宽屏 21:9</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="localQualityBlock">
+            <label class="field-label">本地生成质量</label>
+            <div id="qualityCards" class="quality-cards"></div>
+          </div>
+
+          <div id="cloudQualityBlock" class="hidden">
+            <div class="two-cols">
+              <div>
+                <label class="field-label" for="resolution">Seedance 分辨率</label>
+                <select id="resolution"></select>
+              </div>
+              <div id="customModelWrap" class="hidden">
+                <label class="field-label" for="customModelId">模型或 Endpoint ID</label>
+                <input id="customModelId" type="text" placeholder="doubao-seedance-… 或 ep-…">
+              </div>
+            </div>
+            <label class="field-label" for="apiKey">火山方舟 API Key</label>
+            <input id="apiKey" type="password" autocomplete="off" placeholder="仅保存在当前网页会话，不会写进任务文件">
+            <div class="field-hint warning">豆包 App 的每日免费额度不能直接在这里调用；这里使用的是火山方舟 API。</div>
+          </div>
+
+          <details class="advanced">
+            <summary>高级设置 <span>平时不用打开</span></summary>
+            <div class="advanced-body">
+              <div class="two-cols" id="localDetailSettings">
+                <label>自定义步数<input id="customSteps" type="number" min="4" max="40" placeholder="留空使用预设"></label>
+                <label>原生画面短边<select id="nativeEdge"><option value="">使用质量预设</option><option value="256">256px · 流程测试</option><option value="384">384px · 草稿</option><option value="512">512px · 日常</option><option value="640">640px · 较慢</option><option value="768">768px · 很吃资源</option></select></label>
+              </div>
+              <div class="two-cols">
+                <label class="check-row"><input id="generateAudio" type="checkbox" checked><span>生成同步声音</span></label>
+                <label class="check-row"><input id="music" type="checkbox"><span>让模型尝试配乐</span></label>
+                  <label class="check-row" id="realismRow"><input id="realism" type="checkbox" checked><span>自然材质提示与可选写实 LoRA</span></label>
+                  <label class="field-label" for="realismStrength">写实 LoRA 强度（仅 H3）</label>
+                  <input id="realismStrength" type="number" min="0" max="0.6" step="0.05" placeholder="留空沿用预设；0 只保留自然材质提示">
+                  <p class="field-hint">不是越高越真实。出现油亮或过度刻画时，可用同一种子对照 0 与 0.2。关闭上方选项后不加载此 LoRA。</p>
+                <div>
+                  <label class="field-label" for="seed">随机种子</label>
+                  <input id="seed" type="number" value="-1" min="-1" placeholder="-1 为随机">
+                </div>
+              </div>
+              <label class="field-label" for="soundscape">声音说明（可选）</label>
+              <label class="field-label" for="ambience">环境声预设（H3；声音说明优先）</label>
+              <select id="ambience"><option value="none">自行描述</option><option value="summer_street">夏日街边：蝉鸣、远车、稀疏鸣笛</option><option value="night_street">夜间街道：轮胎、远处人声</option><option value="room">室内：细微房间底噪</option><option value="cicadas">独立蝉鸣</option><option value="traffic">独立远处车流</option><option value="crowd">独立远处人声</option><option value="footsteps">画外路人脚步（需校准）</option><option value="leaves">独立轻风树叶</option></select>
+              <label class="field-label" for="performance">可选表演节拍（H3，不保证执行）</label>
+              <select id="performance"><option value="none">按原提示词，不追加表演</option><option value="listen">实验：听见后反应（仍可能过度表演）</option><option value="selfie">实验：自拍观察与放松</option></select>
+              <textarea id="soundscape" rows="3" placeholder="例如：老旧房间的空调低鸣、筷子碰碗、拍桌后的水声；不要预告片音效。"></textarea>
+              <label class="field-label" for="title">成片名称（可选）</label>
+              <input id="title" type="text" maxlength="72" placeholder="不填则自动取提示词前几个字">
+            </div>
+          </details>
+
+          <div class="submit-row">
+            <button id="generateButton" class="primary-button" type="submit">
+              <span>开始生成</span><small id="generateSubtext">先用均衡预览检查效果</small>
+            </button>
+            <p id="submitMessage" class="submit-message"></p>
+          </div>
+          <div class="utility-row"><button id="addCurrentShot" type="button" class="secondary-button">＋ 加入分镜工作流</button><button id="prepareGraph" type="button" class="text-button">查看 / 导出生成方案</button></div>
+        </form>
+
+        <aside class="panel side-panel">
+          <div class="side-heading">
+            <div>
+              <div class="eyebrow">DIRECTOR PREVIEW</div>
+              <h2>导演检查台</h2>
+            </div>
+            <span id="previewTag" class="pill">尚未提交</span>
+          </div>
+          <div id="emptyPreview" class="empty-preview">
+            <div class="frame-guide"><span></span></div>
+            <strong>生成后在这里直接看成片</strong>
+            <p>任务可以在后台继续运行。你不需要盯着 ComfyUI 的节点图。</p>
+          </div>
+          <video id="resultVideo" class="result-video hidden" controls playsinline></video>
+          <div id="currentTask" class="current-task hidden">
+            <div class="progress-track"><span id="progressBar"></span></div>
+            <div class="progress-meta">
+              <strong id="taskStatus"></strong>
+              <span id="taskProgress"></span>
+            </div>
+            <p id="taskMessage"></p>
+            <div class="task-actions">
+              <button id="openOutput" class="secondary-button hidden" type="button">在文件夹中显示</button>
+              <a id="downloadOutput" class="secondary-button hidden" download>下载 / 保存</a>
+            </div>
+          </div>
+
+          <div class="learn-card">
+            <div class="learn-icon">?</div>
+            <div>
+              <strong>这次设置会做什么</strong>
+              <p id="plainExplanation">选择模型后，这里会用普通话解释每个设置的影响。</p>
+            </div>
+          </div>
+          <details class="compiled-box">
+            <summary>查看工作室替我补充的提示词</summary>
+            <pre id="compiledPrompt">生成任务提交后显示。</pre>
+          </details>
+        </aside>
+      </div>
+    </section>
+
+    <section id="tab-workflow" class="tab-page">
+      <div class="page-head"><div><div class="eyebrow">SHOT WORKFLOW</div><h2>分镜工作流</h2><p>想法 → 首帧 → 镜头 → 生成 → 检查。每张卡片都是一个独立镜头。</p></div><button id="newProject" class="secondary-button">＋ 新建项目</button></div>
+      <div class="project-layout"><aside class="panel project-sidebar"><h3>我的项目</h3><div id="projectList"></div><p class="field-hint">项目保存在本机，关闭页面后仍可继续。</p></aside>
+      <div class="project-main"><div class="panel project-toolbar"><input id="projectName" placeholder="项目名称" aria-label="项目名称"><div class="utility-row"><button id="saveProject" class="secondary-button">保存</button><button id="exportProject" class="text-button">导出项目</button><button id="importProject" class="text-button">导入项目</button><input type="file" id="projectFile" accept="application/json" hidden><span id="projectSaveState" class="field-hint"></span></div><textarea id="projectNotes" rows="2" placeholder="全片设定：角色、场景、色调与连续性约束（自己参考，不会擅自改写每条提示词）"></textarea></div>
+      <div class="workflow-track"><span>01 想法与素材</span><i>→</i><span>02 独立镜头</span><i>→</i><span>03 本地顺序生成</span><i>→</i><span>04 检查与复用</span></div>
+      <div id="shotBoard" class="shot-board"></div><div class="workflow-actions"><button id="addShot" class="secondary-button">＋ 添加镜头</button><button id="shotTemplate" class="text-button">使用三镜头空白结构</button><button id="runProject" class="primary-button">按顺序生成全部镜头</button></div><p class="field-hint">批量生成支持本地 H3 和 Wan 2.2。一个镜头失败后暂停后续任务，避免浪费等待时间。</p></div></div>
+    </section>
+
+    <section id="tab-library" class="tab-page">
+      <div class="page-head"><div><div class="eyebrow">SHARED ASSET LIBRARY</div><h2>素材与成片</h2><p>统一查看旧工作室、新工作室的输出与项目资产。点击图片继续创作，视频可提取尾帧接拍。</p></div><button id="uploadReference" class="secondary-button">导入参考视频</button><input id="referenceInput" type="file" accept="video/*,.mkv" hidden></div>
+      <div class="library-toolbar"><input id="librarySearch" placeholder="搜索文件名、场景或角色…"><select id="libraryKind"><option value="">全部素材</option><option value="video">视频</option><option value="image">图片</option></select><label class="check-row"><input id="libraryFrames" type="checkbox">显示过程帧</label><button id="refreshLibrary" class="secondary-button">刷新</button><span id="libraryCount" class="field-hint"></span></div>
+      <div id="libraryGrid" class="library-grid"></div>
+    </section>
+
+    <section id="tab-enhance" class="tab-page">
+      <div class="page-head"><div><div class="eyebrow">FINISHING · KEEP THE ORIGINAL</div><h2>画质增强</h2><p>先验收人物、动作和背景，再增强合格底片。不重新生成动作，不做换脸或补帧。</p></div></div>
+      <div class="enhance-layout">
+        <div class="panel enhance-controls">
+          <h3>01 放入合格底片</h3>
+          <p class="field-hint">支持本地生成的视频和自有／已授权外部视频。第一版只处理15秒以内短片，建议先试1秒。</p>
+          <label for="enhanceSource">从素材库选择视频</label><select id="enhanceSource"><option value="">正在读取…</option></select>
+          <div class="utility-row"><button id="enhanceRefresh" class="text-button">刷新列表</button><button id="enhanceUpload" class="secondary-button">导入视频底片</button><input id="enhanceFile" type="file" accept="video/*,.mkv" hidden></div>
+          <div id="enhanceSourceInfo" class="help-box">请选择底片。原文件始终保留。</div>
+          <h3>02 选择增强方式</h3>
+          <label for="enhanceMode">处理引擎</label><select id="enhanceMode"><option value="realesrgan">Real-ESRGAN x2 · 保守细节增强</option><option value="seedvr2_preview">SeedVR2 INT8 · 仅1秒进阶试验（慢）</option><option value="flashvsr_plus_preview">FlashVSR+ Turbo · 仅1秒隔离试验</option><option value="flashvsr_v1_preview">FlashVSR v1.1 · 仅1秒隔离试验（原版权重）</option><option value="resize">普通等比放大 · 无AI补细节</option></select>
+          <p id="enhanceModelStatus" class="field-hint">正在检查增强模型…</p>
+          <label for="enhanceTarget">目标短边（横屏为高度）</label><select id="enhanceTarget"><option value="720">720 · 先检查细节</option><option value="1080" selected>1080 · 合格镜头交付</option></select>
+          <label for="enhanceStrength">AI增强混合强度：<strong id="enhanceStrengthValue">35%</strong></label><input id="enhanceStrength" type="range" min="0" max="60" value="35" step="5">
+          <p class="field-hint">强度越高，纹理变化风险越大。0%是普通放大，不是更强的保真AI。关闭人脸修复、额外锐化、补帧与新声音；保留原声，静音底片仍静音。</p>
+          <label class="check-row"><input id="enhanceAccepted" type="checkbox">我已检查底片没有明显变形、穿模和错误动作</label>
+          <div class="utility-row"><button id="enhancePreview" class="primary-button">先试前1秒</button><button id="enhanceFull" class="secondary-button">增强完整短片</button></div>
+          <p class="field-hint">任务与本地视频生成顺序使用显卡。若外部ComfyUI有任务，会拒绝处理而非中断任务。</p>
+        </div>
+        <div class="panel enhance-results" aria-live="polite">
+          <h3>03 对比，而不是只看分辨率</h3>
+          <p id="enhanceProgress">还没有增强任务。先保形，再提质；低分辨率本身不保证人物更稳定。</p>
+          <div id="enhanceResults"></div>
+          <p class="field-hint">进阶模型只开放前1秒；FlashVSR系列使用独立环境和官方SDPA后备逻辑，加入保持原稀疏遮罩的查询分块降低显存。原版通过官方新版的v1兼容入口运行。画面细节会重建，文字与五官不保证完全不变；完整短片尚未验收。</p>
+          <details><summary>进阶项目核查结论</summary><p class="field-hint">SeedVR2复用已有模型。FlashVSR和FlashVSR+源码、权重位于D盘隔离实验室；没有替换稳定工作室的PyTorch或CUDA。上游主要支持Linux，本机Windows属于实测的实验性适配，不代表官方承诺支持。原版首次接入限制768短边，Plus可试1024短边；交付尺寸与模型画布分开记录。无未经验证的4K按钮。</p></details>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-engines" class="tab-page">
+      <div class="page-head"><div><div class="eyebrow">MODEL ROOM & TOOLBOX</div><h2>模型与工具</h2><p>日常在快速生成与分镜页操作；需要完整参数时，在这里进入 ComfyUI 或 WanGP。</p></div><button id="refreshEngines" class="secondary-button">检测引擎</button></div>
+      <div id="engineCards" class="engine-grid"></div>
+      <div class="panel toolbox-info"><h3>首次启动检查</h3><p id="doctorSummary">点击“检测引擎”查看配置、媒体工具和可选功能状态。未配置引擎不影响分镜管理。</p></div>
+      <div class="utility-row"><button data-folder="outputs" class="secondary-button">打开成片目录</button><button data-folder="logs" class="text-button">查看启动日志</button><button data-folder="archive" class="text-button">旧桌面入口归档</button></div>
+      <div class="panel toolbox-info"><h3>已接入的制作工具</h3><div class="tool-chips"><span>✓ H3 中文音画生成</span><span>✓ Wan 2.2 文生 / 图生视频</span><span>✓ 参考视频自动拆镜</span><span>✓ 独立首帧提取</span><span>✓ 视频截取 / 音轨导出</span><span>✓ 原生分辨率与码率检查</span><span>✓ ComfyUI 节点方案导出</span><span>✓ 旧版 / 新版统一管理</span></div><p class="field-hint">视频工具在“素材与成片”中选择视频使用。拆镜使用 PySceneDetect 0.7.1，视频处理使用已有 FFmpeg；不需要显卡推理。WanGP 中其他模型是否可生成，取决于对应权重是否已下载。</p></div>
+      <div id="advancedEditor" class="panel hidden"><div class="page-head"><strong id="advancedTitle">完整工作台</strong><button id="closeAdvanced" class="text-button">收起工作台</button></div><p id="advancedState" class="field-hint"></p><iframe id="advancedFrame" title="完整模型工作台" loading="lazy"></iframe></div>
+    </section>
+
+    <section id="tab-tasks" class="tab-page">
+      <div class="panel page-panel">
+        <div class="page-head">
+          <div>
+            <div class="eyebrow">RENDER QUEUE</div>
+            <h2>任务与成片</h2>
+            <p>这里记录本工作室提交的任务，API Key 不会写入记录。</p>
+          </div>
+          <button id="refreshTasks" class="secondary-button" type="button">刷新</button>
+        </div>
+        <div id="taskList" class="task-list"></div>
+      </div>
+    </section>
+
+    <section id="tab-learn" class="tab-page">
+      <div class="panel page-panel learning-page">
+        <div class="page-head">
+          <div>
+            <div class="eyebrow">LEARN THE WORKFLOW</div>
+            <h2>你实际在学习一条导演工作流</h2>
+            <p>不必先学节点。先学会判断每一步解决什么问题。</p>
+          </div>
+        </div>
+        <div class="lesson-grid">
+          <article><span>1</span><h3>决定生成方式</h3><p>文生视频自由度高；图片＋文字更容易锁定人物、构图和场景。</p></article>
+          <article><span>2</span><h3>写导演指令</h3><p>主体＋动作＋镜头＋环境反应＋声音。形容词不能替代动作和时间顺序。</p></article>
+          <article><span>3</span><h3>先低成本验证</h3><p>先看人物是否像活人、镜头是否成立，再提高步数和分辨率，不把两小时浪费在错误构图上。</p></article>
+          <article><span>4</span><h3>判断模型</h3><p>H3 适合本地反复试错；Seedance 适合省时间、复杂调度和最终对照，但会产生云端费用。</p></article>
+          <article><span>5</span><h3>看细节而非只看清晰度</h3><p>重点检查眼神、微表情、头发、手部接触、背景运动、空间稳定和声音同步。</p></article>
+          <article><span>6</span><h3>保存可复现设置</h3><p>每个任务都会保存模型、时长、质量、种子和提示词，效果好时可以按同一逻辑继续做。</p></article>
+        </div>
+        <div class="reference-note">
+          <h3>我们借鉴了什么</h3>
+          <p>界面借鉴 ComfyUI App Mode 的“只显示必要输入”、ViewComfy 的表单化工作流，以及 SwarmUI 的简单模式与任务管理思想；底层仍使用你已经装好的 H3 和 ComfyUI，不额外复制一套沉重环境。</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status"></div>
+  <dialog id="mediaDialog"><div class="dialog-head"><strong id="mediaTitle"></strong><button id="closeMedia" class="text-button">关闭 ×</button></div><div id="mediaContent"></div><div id="mediaTools" class="utility-row"></div><div id="toolResult"></div></dialog>
+  <script src="/image-assets.js?v=20261019.1"></script>
+  <script src="/app.js?v=20261019.3"></script>
+  <script src="/hub.js?v=20261019.3"></script>
+  <script src="/enhance.js?v=20261018.3"></script>
+</body>
+</html>

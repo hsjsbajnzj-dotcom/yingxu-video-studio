@@ -1,0 +1,10 @@
+# Observed and tested on Windows x64 / Python 3.12 in an isolated web environment.
+# Not a GPU environment or universal platform lock.
+psutil==7.0.0
+scenedetect-headless==0.7.1
+opencv-python-headless==5.0.0.93
+numpy==2.5.4
+click==8.5.0
+platformdirs==4.13.5
+tqdm==4.70.1
+colorama==0.4.6

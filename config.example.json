@@ -1,0 +1,19 @@
+{
+  "paths": {
+    "state": "runtime",
+    "h3_root": "runtime/h3",
+    "models": "runtime/h3/models",
+    "input": "runtime/h3/input",
+    "h3_output": "runtime/outputs/h3",
+    "wangp_output": "runtime/outputs/wangp",
+    "assets_output": "runtime/outputs/assets"
+  },
+  "tools": {"ffmpeg": "ffmpeg", "ffprobe": "ffprobe"},
+  "engines": {
+    "comfy_stable": {"root": "", "python": "", "port": 8188},
+    "comfy_latest": {"root": "", "python": "", "port": 8189},
+    "wangp_stable": {"root": "", "python": "", "port": 7866},
+    "wangp_latest": {"root": "", "python": "", "port": 7867}
+  },
+  "features": {"mmaudio": false, "realesrgan": false, "seedvr2": false, "flashvsr": false}
+}

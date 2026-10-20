@@ -1,0 +1,3 @@
+-r requirements.txt
+# Official headless distribution; do not also install scenedetect/opencv GUI packages.
+scenedetect-headless==0.7.1

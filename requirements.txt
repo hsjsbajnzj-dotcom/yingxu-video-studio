@@ -1,0 +1,2 @@
+# Web service only. GPU engines keep their own environments.
+psutil==7.0.0
